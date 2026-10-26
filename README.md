@@ -1,0 +1,215 @@
+# GOLDILOCKS Monitor / goldilocks Admin
+
+GOLDILOCKS 클러스터의 상태·리소스·SQL·세션·대기 이벤트를 확인하는 **Java 8 기반 웹/TUI 모니터**입니다. DB 서버에 모니터링 에이전트를 설치하지 않고 외부 관리 PC 또는 별도 서버에서 실행합니다.
+
+이 저장소는 실행 패키지·체크섬·사용법만 공개 배포합니다. 개발용 Java 소스와 비공개 소스 저장소의 Git 이력은 포함하지 않습니다.
+
+## 다운로드
+
+| 파일 | 용도 |
+| --- | --- |
+| [goldilocks-monitor-portable.zip](https://raw.githubusercontent.com/tech-sunje/goldilocks-monitor-pkg/main/goldilocks-monitor-portable.zip) | Windows·공통 실행 ZIP |
+| [goldilocks-monitor-linux.tar.gz](https://raw.githubusercontent.com/tech-sunje/goldilocks-monitor-pkg/main/goldilocks-monitor-linux.tar.gz) | Linux 실행 압축파일 |
+| [ZIP SHA-256](https://github.com/tech-sunje/goldilocks-monitor-pkg/blob/main/goldilocks-monitor-portable.zip.sha256) | ZIP 무결성 확인 |
+| [TAR.GZ SHA-256](https://github.com/tech-sunje/goldilocks-monitor-pkg/blob/main/goldilocks-monitor-linux.tar.gz.sha256) | TAR.GZ 무결성 확인 |
+
+로그인 없이 다운로드할 수 있습니다. 배포 기준 소스 커밋과 빌드 시각은 압축파일의 `BUILD-INFO.txt`에 기록합니다.
+
+## 1. 준비
+
+- **Java 8 이상(JRE)**과 웹 브라우저가 필요합니다.
+- 압축을 해제한 후 실행합니다. 쓰기 가능한 폴더를 사용하십시오.
+- 실행에 JDK·컴파일러·Python·Node.js는 필요하지 않습니다.
+- JDBC 드라이버와 필요한 라이브러리·라이선스 문서는 패키지에 포함됩니다.
+- 배포 기본값은 **mock 모드·127.0.0.1:19090**이며 실제 DB에 접속하지 않습니다. 실제 접속정보·비밀번호·수집 이력은 포함하지 않습니다.
+
+## 2. 웹 실행
+
+### Windows
+
+1. ZIP을 다운로드하고 압축을 풉니다.
+2. `java -version`으로 Java 8 이상인지 확인합니다.
+3. `goldilocks-monitor` 폴더의 **`run-web.cmd`**를 더블클릭합니다.
+4. 실행 창에 표시된 주소를 브라우저에서 엽니다. 기본 주소는 **http://127.0.0.1:19090**입니다.
+
+다른 INI를 지정하려면 명령 프롬프트에서 실행합니다.
+
+```bat
+run-web.cmd C:\monitor\my-monitor.ini
+```
+
+`java`를 찾을 수 없다면 Java 실행 경로를 PATH에 추가하거나 JAVA_HOME을 설정하십시오. 실행 스크립트는 JAVA_HOME이 있으면 해당 Java를 사용합니다.
+
+### Linux
+
+```sh
+tar -xzf goldilocks-monitor-linux.tar.gz
+cd goldilocks-monitor
+sh run.sh
+```
+
+다른 설정 파일도 지정할 수 있습니다.
+
+```sh
+sh run.sh /path/to/my-monitor.ini
+```
+
+직접 JAR로 실행하려면 압축을 푼 폴더에서 다음을 사용합니다. `build/`와 `lib/`의 상대 위치는 유지하십시오.
+
+```sh
+java -jar build/goldilocks-monitor.jar monitor.ini
+```
+
+브라우저 탭을 닫아도 수집 프로그램은 실행 상태를 유지합니다. 프로그램을 종료할 때는 실행 터미널에서 **Ctrl+C**를 누릅니다. 이미 19090 포트를 사용하는 프로그램이 있으면 INI의 포트를 바꿉니다.
+
+## 3. 실제 GOLDILOCKS 연결
+
+웹용 `monitor.ini`에서 mock을 jdbc로 바꾸고 실제 리스너 주소와 조회 계정을 설정합니다.
+
+```ini
+[monitor]
+mode = jdbc
+name = GOLDILOCKS Cluster
+bind = 127.0.0.1
+port = 19090
+
+[collection]
+interval_seconds = 3
+retention_days = 7
+data_dir = ./data
+
+[goldilocks]
+url = jdbc:goldilocks://<접속호스트>:<리스너포트>/test
+user = <모니터링계정>
+password =
+```
+
+수집에 사용하는 계정은 필요한 클러스터·시스템 통계 뷰를 조회할 수 있어야 합니다. 권한이나 버전에 따라 조회할 수 없는 지표는 N/A 또는 수집 오류로 표시될 수 있습니다.
+
+웹 수집 비밀번호는 기존 INI 방식 또는 `MONITOR_DB_PASSWORD` 환경변수로 전달합니다. 웹의 기존 인증 방식은 유지됩니다. 비밀번호를 공개 저장소에 올리지 마십시오.
+
+Linux 환경변수 예시:
+
+```sh
+read -r -s -p 'DB password: ' MONITOR_DB_PASSWORD
+export MONITOR_DB_PASSWORD
+printf '\n'
+sh run.sh
+```
+
+INI 변경은 수집 프로세스를 재시작한 뒤 적용합니다. 상대 경로는 INI 위치를 기준으로 해석합니다. 다른 PC에서 웹에 접속해야 한다면 운영 환경의 접근 제어를 구성한 뒤 bind 값을 조정하십시오. 기본 대시보드 HTTP 화면에는 별도 로그인 기능이 없습니다.
+
+## 4. 웹 사용
+
+- **전체 / 그룹 / 멤버 보기**: 구성도에서 클러스터·그룹·멤버를 선택해 표시 범위를 바꿉니다. 표시 범위를 좁혀도 전체 수집과 기록은 유지됩니다.
+- **리소스 패널**: 메모리·세션·SQL 처리량·네트워크 등 지표를 표시하고 패널을 추가·이동·크기 조정합니다. 제공 지표는 DB 버전·권한·수집 가능 여부에 따라 달라집니다.
+- **차트**: 구간 드래그로 해당 시간대를 확대하고 원래 범위로 복원할 수 있습니다. 항목별 선 색상을 변경하며 패널별 설정을 저장합니다.
+- **정보 출처**: 지원 패널의 출력 영역을 클릭해 수집 SQL 또는 수집 방법을 확인합니다.
+- **Top SQL**: 수행시간·수행횟수·최대 수행시간 등의 기준으로 상위 SQL을 확인합니다.
+- **SQL / 세션 / 리소스 연관 분석**: SQL·세션·자원·대기 정보를 함께 확인합니다. 목록 기본값은 10개이며 설정으로 변경할 수 있습니다.
+- **락 대기**: 대기·보유 세션, 관련 SQL과 대상 객체를 확인합니다. 접속 노드와 드라이버 노드가 구분되는 정보도 함께 확인합니다.
+- **진단 보고서**: 기간을 선택해 이력·이벤트·상관 정보 등을 포함한 HTML 보고서를 생성하고 저장·미리보기할 수 있습니다.
+
+화면 갱신 일시정지는 화면만 멈추며 수집과 이력 기록은 계속됩니다. 수집 프로그램을 종료하면 수집도 종료됩니다.
+
+## 5. 멤버 연결과 SQL Console
+
+구성도의 멤버를 우클릭하고 **Connect**를 선택하면 별도 SQL 창이 열립니다. 팝업이 차단되면 해당 모니터링 주소의 팝업을 허용하십시오.
+
+1. 리스너 호스트·포트·사용자·비밀번호와 접속 모드를 입력합니다.
+2. 접속 성공 시 호스트·포트·사용자는 멤버별 설정에 저장합니다. SQL Console 비밀번호는 매번 입력합니다.
+3. SQL을 입력하고 **실행** 또는 **Ctrl+Enter**를 누릅니다. 선택 영역이 있으면 선택한 SQL을 대상으로 합니다.
+4. **결과 / Plan** 탭에서 조회 결과와 실행계획을 확인합니다.
+
+Plan 탭은 `PLAN ONLY`로 계획을 조회하며 SQL을 실제 실행하지 않습니다. SQL 실행은 입력한 계정 권한으로 수행하며 자동 커밋이 켜져 있습니다. 결과 표시에는 최대 행 수와 셀 길이 제한이 있습니다.
+
+객체 탐색, 지원 파일 형식의 Import/Export, SSH trace log와 관리 기능도 제공합니다. SQL 실행·데이터 Import·멤버 관리 명령은 읽기 전용 수집과 별개의 사용자 실행 작업입니다. 필요한 계정·접속 권한과 실행 내용을 확인한 후 사용하십시오.
+
+## 6. TUI 실행
+
+TUI는 **stty를 사용할 수 있는 Linux/Unix 터미널**을 기준으로 합니다. Windows 배포 ZIP에서도 웹은 실행할 수 있지만 네이티브 Windows CMD의 TUI 동작은 지원 범위에 포함하지 않습니다.
+
+```sh
+sh run-tui.sh
+# 또는
+sh run-tui.sh monitor-tui.ini
+```
+
+기본 TUI 설정도 mock이므로 처음에는 DB 없이 화면을 볼 수 있습니다. 한 번만 출력하려면 다음을 실행합니다.
+
+```sh
+sh run-tui.sh --once
+```
+
+실제 DB를 수집하려면 **TUI 전용 `monitor-tui.ini`**의 mode·url·user를 설정합니다. TUI INI에는 비밀번호 항목을 두지 않으며, JDBC 모드 시작 시 숨김 입력으로 받아 실행 중에만 사용합니다. `run-tui.sh`는 TUI 프로세스의 `MONITOR_DB_PASSWORD`를 해제합니다.
+
+상단 요약·클러스터 구성·이벤트는 고정되고 리소스 영역을 스크롤합니다. 터미널 크기에 맞춰 레이아웃이 조정됩니다.
+
+| 키 | 동작 |
+| --- | --- |
+| Tab / Shift+Tab | 패널 이동, 포커스 테두리 표시 |
+| 리소스 패널 Enter → 방향키 | 패널 배치 이동 |
+| 이벤트 패널 위·아래 | 이벤트 창 크기 변경 |
+| 이벤트 패널 Enter → 위·아래 | 이벤트 항목 선택·스크롤 |
+| 이벤트 선택 후 Enter | 상세 이벤트 열기 |
+| Esc | 상세 화면·선택 모드에서 돌아가기 |
+| 이벤트 패널 a | 전체 확인 처리 |
+| PgUp / PgDn | 리소스 영역 이동 |
+| p | 화면 일시정지·재개 |
+| q | 종료 |
+
+배치와 이벤트 확인 상태는 저장 후 다음 실행에 반영됩니다. 웹과 TUI는 별도 프로세스이며, 배포 기본 이력 경로는 웹 `data/mock`·`data/jdbc`, TUI `data/tui/mock`·`data/tui/jdbc`로 분리됩니다.
+
+## 7. 이력과 설정 파일
+
+| 위치 | 내용 |
+| --- | --- |
+| `monitor.ini` | 웹 수집·HTTP 설정 |
+| `monitor-tui.ini` | 독립 TUI 설정, 비밀번호 항목 없음 |
+| `data/` | 웹 이력·진단 이벤트 등 로컬 수집 정보 |
+| `data/tui/` | TUI 전용 이력·이벤트 |
+| INI 옆 `*.properties` | 패널 배치·색상·연결 프로필 등 실행 중 생성되는 설정 |
+| `licenses/` | 포함 라이브러리의 라이선스 문서 |
+| `BUILD-INFO.txt` | 배포 기준 소스 커밋·빌드 시각 |
+
+이력과 설정을 보관하려면 압축을 푼 폴더 및 data 경로에 쓰기 권한이 필요합니다. 업데이트 시 실제 INI와 이력·설정 파일을 별도로 보관하십시오. 공개 패키지에는 개인 설정·수집 이력·비밀번호·테스트 부하 데몬이 포함되지 않습니다.
+
+## 8. 무결성 확인
+
+압축파일과 해당 체크섬 파일을 같은 폴더에 두고 확인합니다.
+
+```sh
+sha256sum -c goldilocks-monitor-portable.zip.sha256
+sha256sum -c goldilocks-monitor-linux.tar.gz.sha256
+```
+
+Windows PowerShell:
+
+```powershell
+Get-FileHash .\goldilocks-monitor-portable.zip -Algorithm SHA256
+```
+
+출력값을 체크섬 파일과 비교하십시오.
+
+## 여러 사용자의 웹 포트 설정
+
+기본 웹 포트는 **19090**입니다. 실행할 때 다른 포트를 지정할 수 있습니다.
+
+```sh
+# Linux
+sh run.sh --port 19091
+sh run.sh monitor.ini --port 19092
+
+# Windows 명령 프롬프트
+run-web.cmd --port 19091
+
+# Java 직접 실행
+java -jar build/goldilocks-monitor.jar monitor.ini --port 19091
+```
+
+포트 적용 순서는 `--port` → INI의 `[monitor] port` → 기본값 `19090`입니다.
+실행 옵션은 INI 파일을 변경하지 않으며, 지정 가능한 범위는 1024~65535입니다.
+이미 사용 중인 포트이면 다른 포트를 선택하라는 오류를 출력하고 종료합니다.
+
+같은 서버에서 여러 사람이 테스트할 때는 **사용자마다 별도 폴더에 압축을 풀고 서로 다른 포트로 실행**하세요. 이렇게 하면 기본 상대경로로 저장되는 수집 이력과 설정도 분리됩니다. 포트만 변경하고 같은 설정·데이터 경로를 공유하면 파일은 분리되지 않습니다.
+다른 PC에서 접속하려면 INI의 `[monitor] bind`를 서버 주소 또는 `0.0.0.0`으로 설정하고 서버 방화벽에서 해당 포트의 접속을 허용하세요.
