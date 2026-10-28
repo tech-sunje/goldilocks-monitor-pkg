@@ -1,3 +1,11 @@
+## 2026-10-28 · Agent panel references and sidebar controls
+
+- Resolve Top SQL ranks using displayed sorting and snapshot evidence; clarify ambiguous panels/rows.
+- Reuse SQL/session/lock/resource details and existing plan/tuning authentication; no added collection queries.
+- Preserve member scope, original ranks and historical per-row evidence; expose unsupported analysis limits.
+- Uppercase sidebar brand with account/logout beneath; five-second hover Easter egg displayed for one second.
+- Java8 regression suite and Firefox workflows verified.
+
 ## 2026-10-28 · Login branding and password flow
 
 - Bundled SUNJESOFT logo and GOLDILOCKS CLUSTER ADMIN title.
