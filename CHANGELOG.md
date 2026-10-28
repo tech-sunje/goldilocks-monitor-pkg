@@ -1,3 +1,11 @@
+## 2026-10-28 · Conversational SQL period analysis
+
+- Preserve exact previous time ranges, including event queries and relative-duration requests.
+- Find newly observed SQL text, valid execution-count increases, and sampled execution-time slowdowns.
+- Reuse counter-continuity checks; reject conflicting cache samples and retain original detail evidence.
+- Bounded cancellable Web Worker over loaded history; no new DB queries.
+- Pure calculations, complete regressions and Firefox conversational/cancellation tests passed.
+
 ## 2026-10-28 · Agent panel references and sidebar controls
 
 - Resolve Top SQL ranks using displayed sorting and snapshot evidence; clarify ambiguous panels/rows.
