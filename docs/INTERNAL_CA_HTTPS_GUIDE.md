@@ -1,16 +1,16 @@
 # 26번 서버: 내부 CA 기반 HTTPS 운영 가이드
 
-현재 상태: HTTP `19090` 포트로 운영한다. 아래는 **향후 전환 절차**이며 이번 작업에서 인증서 발급, 방화벽·서비스·실행 설정 변경을 수행하지 않았다. 현재 조사 환경은 CentOS Linux 8이다. 26번 서버의 실제 접속 IP, root 권한, 방화벽/SELinux 정책과 패키지 저장소는 전환 전에 확인한다. `26`만으로 인증서 IP를 정하지 않는다.
+기본 전송은 HTTP이며 `monitor.scheme=https`를 지정하면 별도 웹 서버 없이 직접 HTTPS를 제공합니다. 인증서는 운영자가 외부 경로로 준비합니다. 앱은 인증서 발급·CA 신뢰 설치·방화벽 변경을 자동 수행하지 않습니다. 실제 접속 주소와 운영체제 정책은 운영자가 확인합니다.
 
-## 권장 구성: 별도 웹 서버 없이 직접 HTTPS
+## 선택 구성: 별도 웹 서버 없이 직접 HTTPS
 
-브라우저 → `https://<26번 서버 접속 IP>:19443` → 모니터 Java 프로세스.
+브라우저 → `https://<실제 접속 주소>:19443` → Java `HttpsServer` 모니터.
 
-Nginx는 필요하지 않다. 기존 Java `HttpServer`를 HTTPS 모드에서 `HttpsServer`와 `SSLContext`로 구성하고 PKCS#12 키 저장소를 읽도록 **다음 작업에서 앱을 수정해야 한다**. 현재 Main.java는 HttpServer만 생성하므로 인증서 파일만 두어도 HTTPS가 켜지는 것은 아니다. HTTP 운영은 기존 경로를 유지한다. HTTPS 모드를 선택하면 인증서 오류 시 시작 실패를 표시하고 HTTP로 자동 우회하지 않는 것이 권장 정책이다.
+Nginx는 필요하지 않습니다. 기본 `monitor.scheme=http`를 유지하면 종전 HTTP 경로입니다. HTTPS는 서버 인증서 PEM과 암호화하지 않은 RSA/EC PKCS#8 PEM 개인키를 읽습니다. 선택한 HTTPS 인증서·키·체인의 누락, 만료, 형식 오류, 불일치는 시작 실패로 처리하며 HTTP로 자동 우회하지 않습니다. 암호화하지 않은 서버 PEM 키라면 비밀번호를 묻지 않습니다. 보호된 PKCS#12 저장소도 선택할 수 있으며 기본은 시작 시 가려진 비밀번호 입력입니다. 비밀번호를 모르는 기존 `.p12` 파일을 추측하거나 변환할 필요는 없으며, 이미 가진 정상 PEM 경로를 사용할 수 있습니다.
 
-현재 앱 포트 범위는 1024~65535이므로 관리자 권한이 필요 없는 19443을 제안한다. 정확한 HTTPS 설정 키/비밀번호 전달 방법은 다음 구현에서 확정한다. 이 문서에 아직 없는 INI 옵션을 설정해도 동작하지 않는다. 전환 시 외부 HTTP 19090은 닫고 HTTPS 포트만 허용하는 편이 좋다. HTTP/HTTPS 동시 제공이 필요하면 별도 요구사항으로 정한다.
+TLS 1.2 이상만 활성화합니다. TLS 1.3은 Java 런타임이 지원하는 경우 사용합니다. 클라이언트는 접속 주소와 일치하는 SAN 인증서 및 발급 CA 신뢰가 필요합니다. 포트는 1024~65535 범위에서 설정합니다. 하나의 프로세스가 선택한 HTTP 또는 HTTPS 한 종류의 포트만 제공하며 자동 리다이렉트·HSTS·실행 중 인증서 재로딩은 제공하지 않습니다.
 
-CA는 조직의 기존 내부 PKI가 있으면 그것을 사용한다. 없으면 아래 소규모 수동 CA로 시작할 수 있다. CA는 상시 서버 프로세스가 필요하지 않다. **CA 개인키는 웹 서버에 상시 두지 않고 별도 관리 장비/오프라인 저장소에서 보관한다.** 26번 서버에는 서버 키 저장소만 설치한다.
+CA는 조직의 기존 내부 PKI가 있으면 그것을 사용합니다. 없으면 아래 소규모 수동 CA 예시를 사용할 수 있습니다. **CA 개인키는 모니터 서버에 상시 두지 않고 별도 관리 장비/오프라인 저장소에서 보관합니다.** 모니터에는 서버 인증서·서버 개인키·필요한 공개 체인만 둡니다.
 
 ## 1. 접속 주소와 발급 요청 준비 (26번 서버)
 
@@ -68,31 +68,74 @@ OpenSSL 버전에 따라 `-addext` 지원을 확인한다(현재 조사 환경 O
 
 26번 서버에 `monitor.crt`를 돌려주고, 사용자 PC에는 공개 인증서 `root-ca.crt`와 별도 경로로 확인할 SHA-256 지문만 배포한다. CA 개인키를 배포하지 않는다.
 
-## 3. 26번 서버의 Java용 키 저장소 준비
+## 3. 서버 PEM 파일과 INI 설정
 
-서버 개인키와 CA가 발급한 인증서를 PKCS#12로 묶는다. 비밀번호는 프롬프트로 입력한다. 중간 CA가 있다면 `-certfile`에는 체인을 담은 파일을 사용한다.
+인증서의 첫 항목은 서버 leaf 인증서여야 합니다. 중간 CA가 있다면 leaf 뒤에 이어 붙이거나 `chain_file`에 발급 순서대로 둡니다. 루트 CA 공개 인증서는 클라이언트 신뢰 저장소에 설치하며 서버 체인에 포함해도 됩니다. 모든 제공 인증서의 유효기간과 체인 서명을 시작 시 검사합니다.
+
+```ini
+[monitor]
+scheme = https
+bind = 0.0.0.0
+port = 19443
+
+[tls]
+certificate_file = ~/.config/goldilocks-monitor/tls/monitor.crt
+private_key_file = ~/.config/goldilocks-monitor/tls/monitor.key
+# Optional issuing/intermediate CA PEM chain; leave empty when unnecessary.
+chain_file =
+```
+
+경로는 절대 경로, INI 파일 디렉터리 기준 상대 경로, 현재 실행 계정의 `~/`를 지원합니다. 환경변수·`~다른사용자`를 자동 확장하지 않습니다. 인증서 파일은 최대 1MiB/16개, 개인키는 최대 256KiB로 제한합니다. 앱 계정 전용 TLS 디렉터리는 권한 700, 암호화하지 않은 PEM 개인키 파일은 소유자 전용 권한(예: 600 또는 400)이 필수입니다. 그룹/다른 사용자 권한이 있으면 시작을 거부합니다. POSIX 권한 검사가 지원되지 않는 파일시스템에서는 보호된 PKCS#12 방식을 사용합니다. 소스 저장소·배포 압축·공유 다운로드 경로에 개인키를 넣지 않습니다.
+
+개인키는 `BEGIN PRIVATE KEY` 형식의 암호화하지 않은 PKCS#8 PEM이어야 합니다. `BEGIN RSA PRIVATE KEY`(PKCS#1), `BEGIN EC PRIVATE KEY`(SEC1), 암호화된 PEM은 그대로 읽지 않습니다. 필요한 경우 운영자가 별도 출력 파일로 변환합니다. 기존 파일을 덮어쓰지 않습니다.
 
 ```sh
 umask 077
-openssl pkcs12 -export -name monitor \
-  -inkey monitor.key -in monitor.crt -certfile root-ca.crt \
-  -out monitor.p12
-# 실제 모니터에 사용하는 JRE8의 keytool로 읽을 수 있는지 확인한다.
-/usr/lib/jvm/jre-1.8.0-openjdk/bin/keytool -list -v \
-  -storetype PKCS12 -keystore monitor.p12
+openssl pkcs8 -topk8 -nocrypt -in original-server.key -out monitor-pkcs8.key
+chmod 600 monitor-pkcs8.key
+sh run.sh /private/path/monitor-https.ini
 ```
 
-`PrivateKeyEntry`, SAN IP, 만료일, 인증서 체인을 확인한다. OpenSSL3 기본 PKCS#12 알고리즘과 오래된 JRE8의 호환성은 실제 설치 버전으로 확인한다. 실패하면 지원되는 JRE8 업데이트/호환 생성 옵션을 검토하고 검증된 조합을 사용한다.
+이 명령은 **서버 개인키**를 변환하는 예시이며 CA 개인키를 읽거나 복사할 필요가 없습니다. 암호 입력이 필요한 기존 키는 OpenSSL 프롬프트로 입력합니다. 비밀번호를 URL·명령행 인자·공개 INI에 넣지 않습니다.
 
-앱 실행 계정 전용 경로(예: `$HOME/.config/goldilocks-monitor/tls/`)를 권한 700으로 만들고 키 저장소를 600으로 설치한다. 소스 저장소, `dist`, 공유 다운로드 디렉터리에는 넣지 않는다. CA 개인키는 이 서버로 복사하지 않는다. PKCS#12 비밀번호는 다음 HTTPS 구현에서 비공개 파일/환경 전달 등 운영 방식을 확정하며 URL, 명령행 인자, 로그, 공개 INI에 평문으로 넣지 않는다.
+1. 기존 INI를 백업하고 외부 PEM 경로·접속 포트·bind를 지정합니다.
+2. 모니터 프로세스를 재시작합니다. PEM이 바뀌어도 재시작 전까지 기존 메모리의 인증서를 사용합니다.
+3. 승인한 내부 사용자/VPN 망에서 필요한 HTTPS 포트만 허용할지는 운영 정책에 따라 정합니다. 앱은 방화벽을 바꾸지 않습니다.
+4. HTTP로 복구하려면 운영자가 `monitor.scheme=http`를 명시하고 재시작합니다. HTTPS 오류 때문에 앱이 자동으로 HTTP를 열지는 않습니다.
 
-HTTPS 기능 구현 후 수행할 절차:
+### 보호된 PKCS#12와 시작 시 비밀번호
 
-1. HTTP 실행 설정을 백업한다.
-2. 앱에 HTTPS 모드, 접속 포트 19443, PKCS#12 경로와 비밀번호 공급 경로를 설정한다(정확한 키는 구현 시 문서화).
-3. 프로세스를 재시작하고 인증서 로딩 실패/만료/키 불일치가 명확히 보고되는지 확인한다.
-4. 승인한 내부 사용자/VPN 망에서만 TCP19443을 허용한다. 검증 완료 후 기존 원격 HTTP19090을 닫는다.
-5. HTTPS 인증서 교체 시 앱 재시작이 필요하다고 가정한다. 무중단 인증서 재로딩은 현재 구현되지 않았다.
+PEM 경로 대신 아래처럼 구성합니다. PEM 인증서·개인키·체인 필드는 비워야 합니다.
+
+```ini
+[monitor]
+scheme = https
+port = 19443
+
+[tls]
+keystore_file = ~/.config/goldilocks-monitor/tls/monitor.p12
+password_source = prompt
+# Optional when exactly one private-key entry exists.
+key_alias =
+```
+
+`prompt`는 `Console.readPassword`를 사용하므로 입력한 비밀번호가 터미널에 표시되지 않습니다. 기본 입력을 표준입력의 평문 에코 방식으로 우회하지 않습니다. 콘솔이 없는 서비스/백그라운드에서는 아래 둘 중 하나를 명시합니다.
+
+- `password_source=file`: `password_file`에 별도 파일을 지정합니다. POSIX 소유자 전용 권한(예: 600), 일반 파일, 최대 1024바이트를 확인합니다. 마지막 한 줄바꿈(CRLF 가능)만 제거하며 앞뒤 공백은 비밀번호의 일부입니다. 권한 검사를 지원하지 않는 파일시스템에서는 prompt/env 방식을 사용합니다.
+- `password_source=env`: `password_env`에는 값이 아닌 환경변수 이름을 지정합니다. 비워 두면 `MONITOR_TLS_PASSWORD`를 사용합니다. 환경은 프로세스 계정/운영 관리자에게 노출될 수 있으므로 보호 정책에 맞게 전달합니다.
+
+비밀번호는 1~1024자이며 중간 줄바꿈·NUL은 거부합니다. file/env/prompt 설정이 서로 충돌하면 시작을 거부합니다. 비밀번호 값을 공개 INI, 명령행 인자, 로그에 넣지 않습니다. 비밀번호 배열은 로딩 후 지웁니다. 저장소는 최대 4MiB, 선택한 인증서 체인은 최대 16개입니다. 개인키 항목이 여러 개면 `key_alias`가 필요합니다. 인증서 기간·체인·키 일치 검사는 PEM과 동일하게 적용합니다.
+
+새 저장소를 운영자가 만들 때는 OpenSSL 비밀번호 프롬프트를 사용합니다. 이미 존재하는 서버 키나 저장소를 덮어쓰지 않습니다.
+
+```sh
+umask 077
+openssl pkcs12 -export -name monitor -inkey monitor.key \
+  -in monitor.crt -certfile root-ca.crt -out new-monitor.p12
+chmod 600 new-monitor.p12
+```
+
+OpenSSL과 구형 Java8의 PKCS#12 암호화/MAC 호환성은 실제 실행할 Java 버전에서 검증합니다. 호환되지 않으면 업데이트된 Java8을 사용하거나 검증한 저장소 생성 설정을 선택합니다. 암호화된 PKCS#8 PEM 자체의 비밀번호 입력은 지원하지 않으며 보호된 PKCS#12를 사용합니다. HTTP 모드에서는 위 TLS 경로·비밀번호 옵션을 읽거나 입력받지 않습니다.
 
 ## 4. 사용자 PC의 신뢰 설정
 
@@ -121,7 +164,7 @@ openssl s_client -connect "$MONITOR_IP:19443" -verify_ip "$MONITOR_IP" \
 ## 6. 갱신·운영
 
 - 서버 인증서 만료 30일 전부터 정기 확인: `openssl x509 -in monitor.crt -checkend 2592000 -noout`의 실패를 알림으로 처리한다. CA 만료도 별도로 관리한다.
-- 새 키/CSR를 생성하고 같은 CA로 재발급한다. 새 SAN·만료일·키 일치·체인과 JRE8 키 저장소 로딩을 검증한 뒤 PKCS#12를 교체하고 모니터를 재시작한다. 진행 중 감시 작업은 재시작 중단으로 표시되므로 갱신 시점을 조정한다.
+- 새 키/CSR를 생성하고 같은 CA로 재발급한다. 새 SAN·만료일·키 일치·체인과 실제 Java 런타임의 PEM 로딩을 검증한 뒤 서버 PEM 파일을 교체하고 모니터를 재시작한다. 진행 중 감시 작업은 재시작 중단으로 표시되므로 갱신 시점을 조정한다.
 - 기존 CA로 갱신하면 PC의 루트 재설치는 보통 필요 없다. 루트 교체 시 새 루트를 PC에 먼저 배포하고 유예 기간을 둔다.
 - 서버 키 유출 시 키/인증서 재발급 및 기존 인증서 폐기 정책을 적용한다. 루트 키 유출 시 해당 루트 신뢰 제거·새 루트 배포와 전체 재발급이 필요하다. 수동 CA의 CRL/OCSP 자동 배포는 위 예시에 포함되지 않는다.
 - HTTPS는 전송 암호화와 서버 식별 기능이다. 모니터의 접근 통제·DB 권한·관리 포트 제한은 별도로 유지한다.

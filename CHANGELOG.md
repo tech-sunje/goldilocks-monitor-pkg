@@ -1,3 +1,11 @@
+## 2026-10-28 · Optional HTTPS and web authentication
+
+- Direct HTTPS with external PEM/PKCS12 and hidden prompt/file/env passwords; HTTP remains default.
+- Local admin/viewer web accounts, bootstrap rotation, sessions, origin/host checks and bounded authentication.
+- Private DB password file support; saved DB credentials require explicit authentication.
+- Authenticated bounded SQL imports with upload deadline; compact agent greeting.
+- Java8 regression suite and trusted-CA HTTPS integration verified.
+
 # 변경 내역
 
 ## 2026-10-28 — 시간 구간 이벤트·대시보드 명령·사용 안내
