@@ -35,3 +35,7 @@ Sessions expire after the configured absolute lifetime and are kept only in memo
 Login and password operations accept at most 4096 bytes, at most two simultaneous requests, and a configurable 1–30 second body deadline (default 5 seconds) and are throttled before password hashing (5 attempts per source address and 20 globally per minute). Reverse proxies share an address for this purpose. Strong passwords should contain 12–256 characters. No public sign-up, password email, SSO, or database-dependent login is provided. Local filesystem access to the account store grants control over local monitor identity, so protect it alongside other runtime configuration.
 
 The launcher configures the JDK HTTP server to skip draining rejected request bodies (`sun.net.httpserver.drainAmount=0`) before server initialization. This prevents incomplete rejected uploads from occupying request workers; completely consumed normal requests retain normal connection reuse. Embedded integrations must call `WebAccess.prepareServer()` before creating an HTTP server.
+
+초기 암호 변경 화면의 **다음에 하기**를 선택하면 현재 로그인 세션에서 변경을 미루고 모니터로 이동할 수 있습니다. 초기 암호 변경 여부는 저장된 계정에 그대로 남으므로 다음 로그인 시 다시 안내합니다. 기존 로그인·만료·admin/viewer 권한 검사는 유지합니다.
+
+로그인 페이지를 새로고침(F5)하면 세션 상태에 관계없이 로그인 입력 화면부터 표시합니다. 기존 세션을 자동 로그아웃시키지는 않으며, 암호 변경 화면은 로그인 제출 결과에 따라 열립니다.

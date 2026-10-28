@@ -1,3 +1,9 @@
+## 2026-10-28 · Login branding and password flow
+
+- Bundled SUNJESOFT logo and GOLDILOCKS CLUSTER ADMIN title.
+- Do this later defers initial password change for the current session; next login reminds again.
+- Reload returns to sign-in form; account password change remains available.
+
 ## 2026-10-28 · Optional HTTPS and web authentication
 
 - Direct HTTPS with external PEM/PKCS12 and hidden prompt/file/env passwords; HTTP remains default.
