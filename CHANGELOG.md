@@ -1,3 +1,12 @@
+## 2026-10-29 · source 9acbf89
+
+- 리소스별 화면 표시·이력 저장·소리 알림 통합 표와 저장 분리
+- 오프라인 20c/21c/26c 뷰·컬럼·Server Property 설명 검색
+- 향후 공유메모리 평균 및 등록 기준 상대 변화율 감시, 동시 최대 4개
+- 작업 표·요청 날짜와 시각·완료 결과 삭제, 이벤트 보존
+- 우측 설정 패널 폭·정렬·구분선·저장 메시지 배치 개선
+- Java 8 로그인·오프라인 자료·압축파일·HTTP/TUI 실행 검증
+
 ## 2026-10-28 · Conversational SQL period analysis
 
 - Preserve exact previous time ranges, including event queries and relative-duration requests.
