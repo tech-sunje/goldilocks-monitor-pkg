@@ -1,3 +1,8 @@
+## 2026-10-29 · source dc401a8
+
+- 대상 이름이 앞인 drop/truncate/delete/update 요청에도 명확한 금지 안내
+- V$TRANSACTION 관측 키 TRANS_ID·TRANS_SEQ·SESSION_ID 기본 입력, 프로그램 연결 시 SERIAL_NO 포함
+
 ## 2026-10-29 · source bef9f28
 
 - 허용된 SELECT만 서버 파싱·바인딩·읽기 전용 트랜잭션으로 조회
