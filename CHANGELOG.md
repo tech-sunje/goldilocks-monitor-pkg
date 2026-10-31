@@ -1,0 +1,212 @@
+## 2026-10-31 · e3b6e6b
+
+- 복합 진단: 원인 우선순위를 SQL 1개 제한으로 오해하는 문제 수정, 구간 겹침만으로 만든 자원 원인 후보 제거, 확인된 멤버·세션을 먼저 설명.
+- CPU usage/사용률/사용율 및 %/퍼센트/프로 조건과 한번만 알림 후 전체 작업 종료 지원. 단순 감시는 측정값을 먼저 보여주며 요청하지 않은 자동 진단 설명을 숨김.
+- 과거이력의 저장 자원 전체 표시, 멤버 구간 통계와 완료 지연 SQL 상위 10개 통계. 보고서 DB 자원 우선 정렬 및 Related SQL 중복 상세 버튼 정리.
+- 20c/21c/26c 전체 오프라인 매뉴얼을 포함하여 ZIP/TAR.GZ를 2개 파일로 분할 배포. README의 합치기 방법과 체크섬 확인.
+
+## 2026-10-29 · source 4b825c8
+
+- 지속 SSH 연결을 이용한 노드별 CPU·메모리·네트워크·DB 데이터/로그 볼륨 자원 수집
+- 전체 활성 노드의 System trace 표·노드 필터·로그 이벤트 연계, SSH trace 동시 4개 제한 해제
+- 상단 요약 카드/구성도 크기 조정, 현재 스냅샷 패널과 사용자 정의 카드 배치
+- DB assistant의 근거 기반 SQL 원인 후보·관측 시각·다음 확인사항, 한글/영문 속성 매뉴얼 검색
+- 과거이력 이벤트 요약을 시간 내림차순으로 페이징하고 클릭 시에만 상세 조회; 페이지 기준 시각 유지
+- Java 8 전체 회귀, HTTP/HTTPS·브라우저·패키지 실행 검사 통과. 운영 HTTP 4멤버 수집 확인; Windows 실제 실행은 미검증
+
+## 2026-10-29 · source 536d221
+
+- 노드별 IP/리스너 포트/DB 계정 설정과 소유자 전용 숨김 접속정보 파일
+- 독립 로컬 V$CLUSTER_MEMBER 관점 비교, GLOBAL_SCN 보조 정보, 연속 확인 기반 통신 단절·split-brain 의심 이벤트와 상세 표
+- 수집 접속 장애 시 저장된 노드의 첫 정상 연결로 자동 전환하고 유지, 잘못된 카운터 차분 방지
+- 일반 테이블·뷰의 식별 키 메타데이터 제안과 확인/추정 구분
+- Java 8 전체 회귀, 브라우저, 실제 4노드 읽기 전용 정상 관측 검증; 실제 장애 주입·Windows 실행은 미검증
+
+## 2026-10-29 · source dc401a8
+
+- 대상 이름이 앞인 drop/truncate/delete/update 요청에도 명확한 금지 안내
+- V$TRANSACTION 관측 키 TRANS_ID·TRANS_SEQ·SESSION_ID 기본 입력, 프로그램 연결 시 SERIAL_NO 포함
+
+## 2026-10-29 · source bef9f28
+
+- 허용된 SELECT만 서버 파싱·바인딩·읽기 전용 트랜잭션으로 조회
+- 데이터 변경·DDL·파일/OS·임의 함수·우회 SQL 차단
+- 식별 키 기반 행 잔존 관측, 제한된 트랜잭션/세션 프로그램 정보 연결
+- 조회 한도·타임아웃·별도 작업자·상세 지연 로딩, 실제 DB/브라우저 검증
+
+## 2026-10-29 · source 8dc8466
+
+SQL 콘솔: 실행 버튼 맨 왼쪽, 접속종료 상단 오른쪽, 다국어·웹 로그아웃 숨김. 백그라운드 가능작업/가능한 작업/메뉴얼/매뉴얼 표현은 같은 도움말로 처리합니다.
+
+## 2026-10-29 · source e393a59
+
+- 상세창 공통 톤·표·영역 구분선, 결과서 요청 날짜와 시각
+- 백그라운드 지원 명령 도움말·예문, 도움말은 작업 미등록
+- 대화창 상단 고정 정보 구분선, 하단 구분선 여백
+
+## 2026-10-29 · source 9acbf89
+
+- 리소스별 화면 표시·이력 저장·소리 알림 통합 표와 저장 분리
+- 오프라인 20c/21c/26c 뷰·컬럼·Server Property 설명 검색
+- 향후 공유메모리 평균 및 등록 기준 상대 변화율 감시, 동시 최대 4개
+- 작업 표·요청 날짜와 시각·완료 결과 삭제, 이벤트 보존
+- 우측 설정 패널 폭·정렬·구분선·저장 메시지 배치 개선
+- Java 8 로그인·오프라인 자료·압축파일·HTTP/TUI 실행 검증
+
+## 2026-10-28 · Conversational SQL period analysis
+
+- Preserve exact previous time ranges, including event queries and relative-duration requests.
+- Find newly observed SQL text, valid execution-count increases, and sampled execution-time slowdowns.
+- Reuse counter-continuity checks; reject conflicting cache samples and retain original detail evidence.
+- Bounded cancellable Web Worker over loaded history; no new DB queries.
+- Pure calculations, complete regressions and Firefox conversational/cancellation tests passed.
+
+## 2026-10-28 · Agent panel references and sidebar controls
+
+- Resolve Top SQL ranks using displayed sorting and snapshot evidence; clarify ambiguous panels/rows.
+- Reuse SQL/session/lock/resource details and existing plan/tuning authentication; no added collection queries.
+- Preserve member scope, original ranks and historical per-row evidence; expose unsupported analysis limits.
+- Uppercase sidebar brand with account/logout beneath; five-second hover Easter egg displayed for one second.
+- Java8 regression suite and Firefox workflows verified.
+
+## 2026-10-28 · Login branding and password flow
+
+- Bundled SUNJESOFT logo and GOLDILOCKS CLUSTER ADMIN title.
+- Do this later defers initial password change for the current session; next login reminds again.
+- Reload returns to sign-in form; account password change remains available.
+
+## 2026-10-28 · Optional HTTPS and web authentication
+
+- Direct HTTPS with external PEM/PKCS12 and hidden prompt/file/env passwords; HTTP remains default.
+- Local admin/viewer web accounts, bootstrap rotation, sessions, origin/host checks and bounded authentication.
+- Private DB password file support; saved DB credentials require explicit authentication.
+- Authenticated bounded SQL imports with upload deadline; compact agent greeting.
+- Java8 regression suite and trusted-CA HTTPS integration verified.
+
+# 변경 내역
+
+## 2026-10-28 — 시간 구간 이벤트·대시보드 명령·사용 안내
+
+- 지정한 오늘 시각 구간의 저장 이벤트를 제한된 비용으로 조회·요약하고 상세 창과 취소를 지원합니다.
+- 멤버명을 생략한 새 질문은 전체 범위를 사용하며 락·느린 SQL 전체 멤버 감시도 지원합니다.
+- 명확한 확인 처리 명령만 기존 대시보드 기능에 연결합니다. 요청 당시 이벤트를 고정하고 조회·질문·부정·범위 제외·인용과 구분합니다.
+- 검증한7개 모니터 사용 안내와 출처를 제공하고 조회/감시/SQL 매뉴얼과 구분합니다.
+- 전체 Java/Node/HTTP/TUI 회귀와 Firefox 이벤트·명령·안내·화면 독립성 검증을 통과했습니다.
+
+## 2026-10-28 — 에이전트 SQL 리스너 포트 수정
+
+- 실행계획과 에이전트에서 복사한 SQL 콘솔은 클러스터 host/port 대신 listenerHost/listenerPort를 사용합니다.
+- 현재 리스너·저장된 SQL 접속 정보·과거 리스너 순으로 확인하며 클러스터 포트로 대체하지 않습니다.
+- 서로 다른 클러스터/리스너 주소와 누락 정보 회귀 및 Firefox 검증을 통과했습니다.
+
+## 2026-10-28 — 느린 SQL 감시와 에이전트 버튼 폰트
+
+- 미래 기간의 느린 SQL 알림 요청을 백그라운드 감시로 등록합니다. 과거 조회와 구분하며 동시4개 제한·저장·완료/중단 이벤트를 공유합니다.
+- 기존 진단만 재사용하고 구간 관측·실행 카운터 증가를 확인합니다. 캐시값과 실패·공백을 정상 신규 실행으로 오인하지 않습니다.
+- 관측 필드는 필요한 항목만 크기를 제한해 저장하며 기존 이벤트 근거는 유지합니다.
+- 에이전트와 하위 창 버튼을 본문과 같은12px로 통일했습니다. 전체 회귀와 Firefox 실제 스타일 검증을 통과했습니다.
+
+## 2026-10-28 — DB 에이전트 질문·매뉴얼·튜닝 연결 보강
+
+- 한국어/영어 동의어·혼합 표현, 모호한 질문 후보 선택과 일치 점수(확률 아님)를 지원합니다.
+- SQL이라는 단어만으로 느린 SQL을 선택하지 않으며, 감시 등록과 작업 목록 조회를 구분합니다. 등록 결과와 실행 중/전체 작업 수를 표시합니다.
+- 출처가 있는 8개 매뉴얼 주제를 안내하고 대상 멤버 SQL 콘솔에 예제를 복사합니다. 자동 접속·실행하지 않습니다.
+- 실행계획은 멤버 접속 정보를 공유하고 기존 SQL 튜닝 분석·선택 후보 비교를 재사용합니다. 인증·분석 중 상태를 일관되게 유지합니다.
+- 빌드/패키징 시 이전 dist 산출물을 정리합니다. Java8 전체 회귀, Firefox 팝업/복사 전용/튜닝 잠금 검증을 통과했습니다.
+- 현재 HTTP. 내부 CA 직접 HTTPS 전환 절차를 문서로 제공합니다. HTTPS 코드/실서버 적용은 다음 작업입니다.
+
+## 2026-10-28 — 백그라운드 탭 복귀 이력 복구
+
+배포 기준 소스 커밋: `1c6f150253b6e095853df147a3feda5f6237173d`. Java 8 이상 지원.
+
+- 화면을 보지 않는 동안 느려진 타이머·네트워크·일시정지로 놓친 구간을 복귀 시 저장 이력으로 보충합니다.
+- 기존 차트를 유지하며 비동기로 병합하고, 중복 요청을 공유하며 실패 시 재시도 간격을 둡니다.
+- 기본 DB 수집·상태 갱신 경로를 유지합니다. 실제 수집 누락은 임의로 선으로 연결하지 않습니다.
+- 전체 회귀 및 복귀 상황을 재현한 Firefox 검증을 통과했습니다.
+
+## 2026-10-28 — SQL OPS 구간 분석·이력 로딩·구성도 개선
+
+배포 기준 소스 커밋: `bab5eeda08ec0cf7a330ca136ffb6ac5d7086a23`. Java 8 이상 지원.
+
+- SQL OPS 선택 구간을 별도 창에서 분석합니다. 실행시간/횟수 증가량, 최근 실행시간 급증, 실행 빈도 감소, 기준/문제 시점 자원 비교를 표시합니다. 최초 누적값·초기화·식별자 변경·소멸·관측 공백을 구분합니다.
+- SQL·세션·락 상세는 분석 창 안에서 열고 그 창의 이벤트만 별도 이벤트 창으로 엽니다. 메인 화면 이벤트 동작은 유지합니다. 이미 적재된 자료만 Web Worker로 분석하며 DB 추가 조회와 원인 확정을 하지 않습니다.
+- 이력 인덱스·빠른 gzip·반복 하위 관측의 공유 참조 전송으로 로딩 비용을 줄입니다. 로딩 중 차트에 안내를 표시하고 최근 1시간 기준 고정 축을 사용합니다. 요청 구간 전체에서 최대 720개를 선택하며 모든 원본 관측의 전송이나 모든 환경에서 3초 완료를 보장하지 않습니다.
+- 동일 지표 패널 중복을 막고 기존 중복 배치를 정리합니다. 드래그 중 가장자리 자동 스크롤과 마지막 위치로 놓기를 지원합니다.
+- 구성도는 기본 가운데 배치이며 멤버·그룹 선택 시에만 오른쪽 요약 표와 분할합니다. 그룹 내 멤버를 비교하고 자동 갱신하며 다른 그룹을 접지 않습니다. 클러스터 클릭으로 가운데 배치에 복귀합니다.
+- 전체 Java·Node·HTTP·TUI 회귀, Firefox 동작, Java 8 배포 패키지 실행 및 자격증명 제외를 검증했습니다. 기능별 관측 한계는 README에 명시했습니다.
+
+## 2026-10-27 — Cyclone 구성도·날짜별 저장·객체 조회 개선
+
+배포 기준 소스 커밋: `af5bf7b9998edca064d1d7c59b8c440cc0e190a8`. Java 8 이상 지원.
+
+- Cyclone을 Client/Server 줄에 IP+PID 하나당 보라색 아이콘 하나로 표시하고 연결선·멤버 요약·그룹 요약을 수정했습니다.
+- 기본 31일 보관과 실행 위치 기준 `output/YYYYMMDD/event/EVENT_ID/`, `history/모드/`, `log/monitor.log` 구조를 적용했습니다. 기존 평면 이력·이벤트와 화면·통계·보고서 호환성을 유지합니다.
+- 재참여로 멤버 ID가 변경되어도 저장한 리스너 IP·Port·사용자명을 그룹명·멤버명으로 재사용합니다.
+- SQL 창의 주기적 연결 체크를 제거했습니다. 실제 DB 요청에서 연결 종료가 확인되면 SQL과 결과를 보존하고 재접속 화면으로 전환합니다. DB 세션 유휴 설정은 600초입니다.
+- 객체상세 조회하기는 컬럼정보 아래에서 최초 SELECT 한 번의 결과를 500행씩 스크롤 fetch합니다. 내보내기는 전체 테이블과 현재 조회 결과 중 선택합니다.
+- SQL 결과·객체상세의 하단 상태를 별도로 보관하고 선택된 탭의 상태만 표시합니다.
+- 전체 Java/Node/HTTP/TUI 회귀 테스트와 Firefox 구성도·멤버/그룹 테스트를 통과했습니다. 실제 JDBC에서 500+500+201행 fetch와 서버 idle 종료 오류를 확인했습니다. 동시 DML의 별도 스냅샷 일관성 검증은 미완료입니다.
+
+## 2026-10-27 — SQL 창 및 HTML 보고서 개선
+
+배포 기준 소스 커밋: `fc9ddb9`. Java 8 이상 지원.
+
+### 주요 변경사항
+
+- SQL 창 왼쪽은 **스키마 → 객체 유형 → 객체** 트리입니다. 접속하면 `PUBLIC`을 기본으로 펼치고, 다른 스키마를 펼치면 해당 객체 목록을 조회합니다. 객체 상세·이름 삽입·Import/Export는 선택한 스키마를 사용합니다.
+- SQL 결과 영역 맨 아래의 작은 메시지 줄에서 수행 중·성공·실패와 수행시간을 확인합니다. DDL도 성공 여부를 표시하며 오류에는 DB 메시지와 SQLSTATE·오류 코드를 표시합니다.
+- 연관 분석 상세는 **Overview / SQL / Lock Status** 등 작은 제목과 흐린 회색 단락 구분선을 사용합니다. 표 선택·상세 고정·스크롤 동작은 유지됩니다.
+- 이벤트 표 위 개요 문구 뒤에 **전체 확인 처리 → 통계** 버튼을 배치합니다.
+- 실행 버튼은 파란색, 실제 비활성 버튼은 회색으로 구분합니다. 탭·범례의 선택 상태 색상은 별도입니다.
+- 진단보고서 **생성·미리보기**는 처음부터 사용할 수 있습니다. 미리보기를 먼저 누르면 선택 기간의 보고서를 생성해 새 창에 표시하며, 같은 결과는 재사용합니다. 생성 중에는 중복 요청을 막습니다.
+- 새로 생성한 HTML 보고서 맨 위에는 **PDF 저장 / 인쇄** 버튼이 있습니다. PDF 저장을 누른 뒤 브라우저 인쇄 창에서 저장 대상을 PDF로 선택합니다. 두 버튼과 언어 선택 등 조작 버튼은 실제 인쇄·PDF에 포함되지 않습니다.
+- 보고서에는 `goldilocks cluster` 문구를 연한 대각선 워터마크로 표시합니다. 인쇄 시 스크롤 영역의 높이 제한을 해제하며, 출력 내용은 보고서에서 선택한 수집 시점과 표시 상태를 기준으로 합니다. 브라우저의 용지·배율·머리글/바닥글 설정은 인쇄 창에서 조정합니다.
+
+## 2026-10-27
+
+배포 기준 소스 커밋: `3d61d49`. Java 8 이상 지원.
+
+## 9. 추가된 웹 기능
+
+### SQL 튜닝 비교
+
+노드 SQL 창의 하단 **SQL 튜닝**에서 **SQL 분석**을 실행합니다. 실행계획과 조회 가능한 인덱스·컬럼 정보를 근거로 인덱스 접근, 형변환, 조인 순서·방식, 정렬·집계 등의 권장방안과 후보 SQL을 확인할 수 있습니다. SQL 없이 설명만 있는 행은 사용자가 검토할 사항이며 자동 실행 대상이 아닙니다.
+
+실행할 후보 행을 명시적으로 선택하고 **선택 후보 비교**를 누르면, 확인한 원본과 후보 하나만 실행합니다. 선택하지 않은 후보나 인덱스 DDL은 실행하지 않습니다. 원본은 최대 30초, 후보는 원본 전체 결과 조회 시간의 2배를 기준으로 DB query_timeout을 적용합니다(초 단위 올림, 최소 1초). 시간 초과 후보는 제외 사유와 함께 남습니다. 비교 상태는 실행 중 강조 표시되며, 시간 초과 시 연결을 강제로 끊지 않습니다. **중지**는 실행 중 문장만 취소합니다. 노드 SQL 접속에는 IDLE_TIMEOUT=600초를 적용합니다. 후보 SQL은 복사 후 직접 편집할 수 있습니다.
+
+### 구성도와 접속 클라이언트
+
+구성도는 그룹과 멤버를 연결하는 트리 배치입니다. **접속노드 표시**를 켜면 외부 TCP 클라이언트 IP·접속 수를 멤버 아래 표시하며, IPC와 내부 cluster peer는 제외합니다. 클라이언트 아이콘에는 Admin 메뉴가 없습니다. 표시 설정은 브라우저에 저장됩니다.
+
+그룹을 선택하면 해당 그룹 정보만 모니터링하면서 다른 그룹을 접어 표시합니다. 클러스터 제목의 전체 구성 규모는 유지됩니다. 멤버 선택 시 해당 멤버 상세보기로 전환하고, 클러스터 제목이나 **전체보기**를 누르면 전체 화면으로 돌아갑니다. 상세보기 중에도 전체 수집·이력 저장은 계속합니다.
+
+### 이벤트 통계
+
+이벤트의 **전체 확인 처리** 옆 **통계**에서 기간을 지정합니다. 보관 중인 전체 이벤트 요약을 대상으로 Event ID별·날짜별 발생 횟수를 집계합니다. 날짜는 최신순이며, 날짜를 클릭하면 그날의 Event ID별 건수를 펼치거나 접습니다. 읽음 상태는 변경하지 않습니다.
+
+### 비활성 멤버 제거
+
+클러스터 제목 오른쪽 **⋮ → 비활성 멤버 제거**를 선택하고 Global Coordinator에 SYSDBA로 접속합니다.
+
+1. **제거 대상 조회**로 그룹·멤버·클러스터 주소·포트를 먼저 확인합니다.
+2. **비활성 멤버 제거**를 누르고 표시된 대상과 SQL을 확인합니다.
+3. `ALTER DATABASE DROP NO FORCE INACTIVE CLUSTER MEMBERS;`로 전체 비활성 멤버를 제거합니다. 단순 접속 불가(NO_RESPONSE)는 대상 판단 기준이 아닙니다.
+4. 실제 제거가 확인되면 구성도에서 제외되고 **미반영 노드**에 저장됩니다. 응답이 불확실하면 **제거 결과 재확인**을 사용합니다. 이 버튼은 제거를 재실행하지 않습니다.
+
+미반영 노드는 상세보기에서도 표시됩니다. 추가 화면에서 새 그룹 생성 또는 기존 그룹 선택을 변경할 수 있으며, 원래 그룹·주소는 기본값입니다. 등록 정보 편집 뒤 변경된 SQL을 다시 확인해야 합니다.
+
+### 대상 노드 초기화와 재참여
+
+노드 우클릭의 **로컬 클러스터 멤버 초기화**는 INACTIVE 또는 미반영 노드에서만 표시됩니다. 실행 직전 DB 상태와 실제 접속한 멤버 이름을 다시 검증합니다. ACTIVE·NO_RESPONSE만 있는 상태·알 수 없는 노드는 실행할 수 없습니다.
+
+DROP된 노드를 다시 사용할 때는 해당 노드를 LOCAL OPEN까지 구동한 뒤 `ALTER DATABASE RESET LOCAL CLUSTER MEMBER;`로 초기화하고, 원하는 그룹에 새 멤버로 추가한 후 필요한 데이터 리밸런스를 수행합니다. **RESET은 테이블스페이스를 제외한 사용자 생성 객체를 제거합니다.** DROP하지 않은 장애 노드는 RESET 대신 JOIN으로 복귀할 수 있습니다. 모니터의 RESET 기능은 자동 구동·멤버 추가·JOIN·리밸런스를 수행하지 않습니다.
+
+Admin 실패 시 비밀번호 등 입력값과 수행 버튼이 유지됩니다. 재시도마다 실행 내용을 확인하며 실행 중 중복 클릭을 차단합니다. 비밀번호는 연결 프로필이나 미반영 노드 파일에 저장하지 않습니다.
+
+## 2026-10-28 대화형 DB 에이전트
+
+기존 스냅샷을 활용한 대화 패널, 멤버 맥락 유지, SQL·락 상세 연결, 미수집·수집 실패·관측시각 안내. 전체 테스트 및 Firefox 검증 통과.
+
+2026-10-28: DB 에이전트와 SQL·세션·락 상세를 독립 창으로 엽니다. 질문 표시·작업 중 안내와 “최근 5분 내 느린 쿼리 1개만” 등의 기간·개수 및 후속 질문을 지원합니다. 이미 적재된 이력의 관측 범위를 표시하며 실제 실행 시점을 보장하지 않습니다. 전체 회귀·Firefox 검증 통과.
+
+2026-10-28: 에이전트에서 “플랜 보여줘”/“plan”으로 선택 SQL의 현재 실행계획을 별도 인증창에서 PLAN ONLY 조회합니다. 비밀번호는 대화·로컬 저장소에 남기지 않으며 인증 중 창 종료 시 늦은 연결도 정리합니다. “G2N1 5분간 락 감시”는 서버 백그라운드 작업으로 등록하고 동시 실행은 최대 4개입니다. 창을 닫아도 감시를 계속하고 완료·취소·중단 결과는 메인 진단 이벤트와 상세보기에서 확인합니다. 기존 스냅샷만 사용하며 추가 감시 DB 조회는 없습니다. 서버 재시작 중 관측 불능은 INTERRUPTED로 표시합니다. 전체 회귀·Firefox·HTTP 수명주기 및 실제 DB의 SELECT 1 PLAN ONLY 검증 통과.

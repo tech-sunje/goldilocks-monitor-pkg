@@ -1,0 +1,3 @@
+source_commit=e3b6e6ba05a451933d45b55f3fb56ffac9121ec5
+built_at_utc=2026-10-31T06:52:13Z
+runtime=Java 8+
