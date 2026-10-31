@@ -6,12 +6,18 @@ GOLDILOCKS 클러스터의 상태·리소스·SQL·세션·대기 이벤트를 �
 
 ## 다운로드
 
-| 파일 | 용도 |
+전체 오프라인 매뉴얼이 포함되어 약 155MB입니다. GitHub 단일 파일 한도 때문에 두 부분으로 배포하며, 합치면 일반 ZIP/TAR.GZ가 됩니다.
+
+| 환경 | 내려받을 파일 |
 | --- | --- |
-| [goldilocks-monitor-portable.zip](https://raw.githubusercontent.com/tech-sunje/goldilocks-monitor-pkg/main/goldilocks-monitor-portable.zip) | Windows·공통 실행 ZIP |
-| [goldilocks-monitor-linux.tar.gz](https://raw.githubusercontent.com/tech-sunje/goldilocks-monitor-pkg/main/goldilocks-monitor-linux.tar.gz) | Linux 실행 압축파일 |
-| [ZIP SHA-256](https://github.com/tech-sunje/goldilocks-monitor-pkg/blob/main/goldilocks-monitor-portable.zip.sha256) | ZIP 무결성 확인 |
-| [TAR.GZ SHA-256](https://github.com/tech-sunje/goldilocks-monitor-pkg/blob/main/goldilocks-monitor-linux.tar.gz.sha256) | TAR.GZ 무결성 확인 |
+| Windows | [ZIP 1/2](https://raw.githubusercontent.com/tech-sunje/goldilocks-monitor-pkg/main/goldilocks-monitor-portable.zip.001), [ZIP 2/2](https://raw.githubusercontent.com/tech-sunje/goldilocks-monitor-pkg/main/goldilocks-monitor-portable.zip.002), [ZIP 체크섬](goldilocks-monitor-portable.zip.sha256), [합치기 CMD](https://raw.githubusercontent.com/tech-sunje/goldilocks-monitor-pkg/main/join-packages.cmd) |
+| Linux | [TAR.GZ 1/2](https://raw.githubusercontent.com/tech-sunje/goldilocks-monitor-pkg/main/goldilocks-monitor-linux.tar.gz.001), [TAR.GZ 2/2](https://raw.githubusercontent.com/tech-sunje/goldilocks-monitor-pkg/main/goldilocks-monitor-linux.tar.gz.002), [TAR.GZ 체크섬](goldilocks-monitor-linux.tar.gz.sha256), [합치기 SH](https://raw.githubusercontent.com/tech-sunje/goldilocks-monitor-pkg/main/join-packages.sh) |
+
+각 환경의 4개 파일을 같은 폴더에 저장하세요. 체크섬 링크는 **Raw/Download raw file**로 저장합니다. Windows는 `join-packages.cmd`, Linux는 `sh join-packages.sh`를 실행하면 원본 압축파일을 생성하고 SHA-256을 확인합니다. 그 뒤 생성된 압축파일을 풀어 실행합니다.
+
+최신 소스 기준: `e3b6e6ba05a451933d45b55f3fb56ffac9121ec5` · 2026-10-31
+
+이번 배포: 과거이력의 전체 저장 자원·완료 지연 SQL 통계, CPU 자연어 조건 및 한번만 감시, 알림 핵심 측정값 우선 표시, 복합 진단의 후보 제한·약한 원인 추정·결론 개선.
 
 로그인 없이 다운로드할 수 있습니다. 배포 기준 소스 커밋과 빌드 시각은 압축파일의 `BUILD-INFO.txt`에 기록합니다.
 
